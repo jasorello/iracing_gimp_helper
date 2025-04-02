@@ -5,11 +5,8 @@ edit -> preferences -> folders -> plugin directories
 
 this will add it to the context menu
 
-then go to edit -> keyboard shortcuts to add the keybind for the redraw
+You can initialize an iracing template using the initialize function added to tools -> iracing ->initialize-from-template
 
+And once you've made updates to the META group to change the layers to include the correct path for your car as well as your iracing id, you can run the export-to-iracing command to automatically export.
 
-TODOS:
-
-[] Make errors more visible: Gets for layers and channels should check for a valid response if expected and throw an exception if not, especially if it's related to a configuration problem!
-[] Make init from template actually work!
-[] Check to see if META is populated from defaults (once i add defaults !!)
+then go to edit -> keyboard shortcuts to add the keybind for the export-to-iracing command
