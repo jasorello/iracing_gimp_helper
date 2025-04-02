@@ -1,6 +1,6 @@
 from gi.repository import Gimp, Gio
 from const import *
-import traceback
+import util
 
 HIGH_LEVEL_LAYERS = [
     L_PAINTABLE_AREA,
@@ -18,7 +18,7 @@ HIGH_LEVEL_LAYERS = [
 ]
 
 CHANNELS_TO_COLOR_TAGS = {
-    C_RED: Gimp.ColorTag.RED, 
+    C_RED: Gimp.ColorTag.RED,
     C_GREEN: Gimp.ColorTag.GREEN,
     C_BLUE: Gimp.ColorTag.BLUE,
     C_DECAL_ALPHA: Gimp.ColorTag.YELLOW,
@@ -29,12 +29,7 @@ CHANNELS_TO_COLOR_TAGS = {
 def get_high_level_layer_visibility(image):
     visibility_dict = {}
     for layer_name in HIGH_LEVEL_LAYERS:
-        layer = image.get_layer_by_name(layer_name)
-
-        if layer is None:
-            message = f'Missing required layer {layer_name}'
-            Gimp.message(message)
-            raise ExportException(message)
+        layer = util.get_layer(image, layer_name)
 
         visibility_dict[layer_name] = layer.get_visible()
 
@@ -44,66 +39,78 @@ def get_high_level_layer_visibility(image):
 
 def set_high_level_layer_visibility(image, visibility_dict):
     for layer_name, visibility in visibility_dict.items():
-        image.get_layer_by_name(layer_name).set_visible(visibility)
+        util.get_layer(image, layer_name).set_visible(visibility)
 
 
 def show_paint(image):
-    image.get_layer_by_name(L_SPEC_MAP).set_visible(False)
-    image.get_layer_by_name(L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
-    image.get_layer_by_name(L_PAINTABLE_AREA).set_visible(True)
+    """
+    Enable/disable layers so that only paint-specific layers are visible
+    """
+    util.get_layer(image, L_SPEC_MAP).set_visible(False)
+    util.get_layer(image, L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
+    util.get_layer(image, L_PAINTABLE_AREA).set_visible(True)
 
-    image.get_layer_by_name(L_PAINT).set_visible(True)
-    image.get_layer_by_name(L_DECALS).set_visible(True)
-    image.get_layer_by_name(L_MASKS).set_visible(True)
-    image.get_layer_by_name(L_PIT_STUFF).set_visible(True)
-    image.get_layer_by_name(L_CARBON_FIBER).set_visible(True)
+    util.get_layer(image, L_PAINT).set_visible(True)
+    util.get_layer(image, L_DECALS).set_visible(True)
+    util.get_layer(image, L_MASKS).set_visible(True)
+    util.get_layer(image, L_PIT_STUFF).set_visible(True)
+    util.get_layer(image, L_CARBON_FIBER).set_visible(True)
 
-    image.get_layer_by_name(L_CAR_PATTERNS).set_visible(False)
-    image.get_layer_by_name(L_CUSTOM_PATTERN).set_visible(False)
+    util.get_layer(image, L_CAR_PATTERNS).set_visible(False)
+    util.get_layer(image, L_CUSTOM_PATTERN).set_visible(False)
 
 def show_spec(image):
-    image.get_layer_by_name(L_SPEC_MAP).set_visible(True)
-    image.get_layer_by_name(L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
-    image.get_layer_by_name(L_PAINTABLE_AREA).set_visible(False)
+    """
+    Enable/disable layers so that only spec-map layers are visible
+    """
+    util.get_layer(image, L_SPEC_MAP).set_visible(True)
+    util.get_layer(image, L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
+    util.get_layer(image, L_PAINTABLE_AREA).set_visible(False)
 
-    image.get_layer_by_name(L_PAINT).set_visible(False)
+    util.get_layer(image, L_PAINT).set_visible(False)
 
-    image.get_layer_by_name(L_CAR_PATTERNS).set_visible(False)
-    image.get_layer_by_name(L_CUSTOM_PATTERN).set_visible(False)
+    util.get_layer(image, L_CAR_PATTERNS).set_visible(False)
+    util.get_layer(image, L_CUSTOM_PATTERN).set_visible(False)
 
 
 def show_pattern(image):
-    image.get_layer_by_name(L_SPEC_MAP).set_visible(False)
-    image.get_layer_by_name(L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
-    image.get_layer_by_name(L_PAINTABLE_AREA).set_visible(True)
+    """
+    Enable/disable layers so that only pattern layers are visible
+    """
 
-    image.get_layer_by_name(L_PAINT).set_visible(False)
-    image.get_layer_by_name(L_CAR_PATTERNS).set_visible(True)
-    image.get_layer_by_name(L_CUSTOM_PATTERN).set_visible(True)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_RIGHT).set_visible(False)
+    util.get_layer(image, L_SPEC_MAP).set_visible(False)
+    util.get_layer(image, L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
+    util.get_layer(image, L_PAINTABLE_AREA).set_visible(True)
+
+    util.get_layer(image, L_PAINT).set_visible(False)
+
+    util.get_layer(image, L_CAR_PATTERNS).set_visible(True)
+    util.get_layer(image, L_CUSTOM_PATTERN).set_visible(True)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_RIGHT).set_visible(False)
 
 def show_decals(image):
-    image.get_layer_by_name(L_SPEC_MAP).set_visible(False)
-    image.get_layer_by_name(L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
-    image.get_layer_by_name(L_PAINTABLE_AREA).set_visible(True)
+    """
+    Enable/disable layers so that only decal layers are visible
+    """
+    util.get_layer(image, L_SPEC_MAP).set_visible(False)
+    util.get_layer(image, L_TURN_OFF_BEFORE_EXPORT).set_visible(False)
+    util.get_layer(image, L_PAINTABLE_AREA).set_visible(True)
 
-    image.get_layer_by_name(L_PAINT).set_visible(True)
-    image.get_layer_by_name(L_DECALS).set_visible(True)
-    image.get_layer_by_name(L_PIT_STUFF).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER).set_visible(False)
-    image.get_layer_by_name(L_MASKS).set_visible(False)
+    util.get_layer(image, L_PAINT).set_visible(True)
+    util.get_layer(image, L_DECALS).set_visible(True)
+    util.get_layer(image, L_MASKS).set_visible(False)
+    util.get_layer(image, L_PIT_STUFF).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER).set_visible(False)
 
-    image.get_layer_by_name(L_CAR_PATTERNS).set_visible(False)
-    image.get_layer_by_name(L_CUSTOM_PATTERN).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_RIGHT).set_visible(False)
+    util.get_layer(image, L_CAR_PATTERNS).set_visible(False)
+    util.get_layer(image, L_CUSTOM_PATTERN).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_RIGHT).set_visible(False)
 
 
 def regenerate_channel_masks(image, channel_definition: dict):
-    Gimp.message(str(channel_definition))
     for channel_name, channel_mask in channel_definition.items():
-        Gimp.message(channel_name)
         channel = image.get_channel_by_name(channel_name)
         if channel:
             image.remove_channel(channel)
@@ -113,9 +120,12 @@ def regenerate_channel_masks(image, channel_definition: dict):
 
 
 def remask_layers_from_channel(image: Gimp.Image, layer_names: list, channel_name: str):
+    """
+    Updates the layer mask for each in layer_names based on the channel_name
+    """
     channel = image.get_channel_by_name(channel_name)
     for layer_name in layer_names:
-        layer = image.get_layer_by_name(layer_name)
+        layer = util.get_layer(image, layer_name)
         if layer.get_mask():
             layer.remove_mask(1)
         image.unset_active_channel()
@@ -124,6 +134,9 @@ def remask_layers_from_channel(image: Gimp.Image, layer_names: list, channel_nam
         layer.add_mask(mask)
 
 def regenerate_channels(image):
+    """
+    Regenerates the mask channels based on the content in your design layers
+    """
     # Regenerate channels for pattern based on color in patterns
     Gimp.message('regenerating Pattern')
     show_pattern(image)
@@ -136,15 +149,15 @@ def regenerate_channels(image):
 
     # Regenerate channels for carbon fiber from blue channel in patterns
     Gimp.message('regenerating CF')
-    image.get_layer_by_name(L_CUSTOM_PATTERN).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_LEFT).set_visible(True)
+    util.get_layer(image, L_CUSTOM_PATTERN).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_LEFT).set_visible(True)
     regenerate_channel_masks(
         image,
         {C_CARBON_LEFT: Gimp.ChannelType.BLUE},
     )
 
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
-    image.get_layer_by_name(L_CARBON_FIBER_PATTERN_RIGHT).set_visible(True)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_LEFT).set_visible(False)
+    util.get_layer(image, L_CARBON_FIBER_PATTERN_RIGHT).set_visible(True)
     regenerate_channel_masks(
         image,
         {C_CARBON_RIGHT: Gimp.ChannelType.BLUE},
@@ -180,6 +193,9 @@ def regenerate_channels(image):
 
 
 def export_as_tga(image, path, filename):
+    """
+    Exports the image to the path/filename in tga format
+    """
     export_image = image.duplicate()
     export_image.merge_visible_layers(Gimp.MergeType.CLIP_TO_IMAGE)
     full_path = path + '\\' + filename + '.tga'
@@ -189,12 +205,14 @@ def export_as_tga(image, path, filename):
 
 
 def export_to_iracing(image):
+    """
+    Exports the paint and spec layer to .tga for iracing
+    """
     # Pull export info from META layer
-    meta_layer = image.get_layer_by_name(L_META)
+    meta_layer = util.get_layer(image, L_META)
     children = meta_layer.get_children()
     path = children[0].get_name()
     number = children[1].get_name()
-    Gimp.message(f'{path=}, {number=}')
 
     Gimp.message('exporting car paint')
     show_paint(image)
@@ -206,40 +224,25 @@ def export_to_iracing(image):
 
 
 def regenerate_from_pattern(image):
-    step = 'init'
-    try:
-        # Disable the undo history so we don't pollute the heck outta it
-        step = 'freezing'
-        image.undo_freeze()
+    """
+    Regenerates pattern and layer masks based on your design and then exports
+    to iRacing based on the configuration specified in the META layer
+    """
+    # Disable the undo history so we don't pollute the heck outta it
+    image.undo_freeze()
 
-        step = 'getting active layers'
-        active_layers = image.get_selected_layers()
+    active_layers = image.get_selected_layers()
 
-        step = 'getting current layer visibility'
-        visibility_dict = get_high_level_layer_visibility(image)
+    visibility_dict = get_high_level_layer_visibility(image)
 
-        step = 'regenerating channel masks and applying to layers'
-        regenerate_channels(image)
+    regenerate_channels(image)
 
-        step = 'exporting'
-        export_to_iracing(image)
+    export_to_iracing(image)
 
-        step = 'resetting layer visibility'
-        set_high_level_layer_visibility(image, visibility_dict)
+    set_high_level_layer_visibility(image, visibility_dict)
 
-        step = 'resetting active layers'
-        if active_layers:
-            image.set_selected_layers(active_layers)
+    if active_layers:
+        image.set_selected_layers(active_layers)
 
-        step ='thawing'
-        image.undo_thaw()
+    image.undo_thaw()
 
-        Gimp.message('done!')
-
-    except Exception as e:
-        Gimp.message(f'died in {step}')
-        Gimp.message(str(e))
-        Gimp.message(traceback.format_exc())
-
-class ExportException(Exception):
-    pass

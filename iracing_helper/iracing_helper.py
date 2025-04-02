@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import traceback
 
 import gi
 gi.require_version('Gimp', '3.0')
@@ -10,6 +11,7 @@ from gi.repository import GimpUi
 from gi.repository import GLib
 
 import export
+import initialize
 
 EXPORT = "export-to-iracing"
 INITIALIZE = "initialize-from-template"
@@ -51,12 +53,23 @@ class IracingHelper (Gimp.PlugIn):
         return procedure
     
     def export(self, procedure, run_mode, image, drawables, config, run_data):
-        export.regenerate_from_pattern(image)
+        try:
+            export.regenerate_from_pattern(image)
+        except Exception as e:
+            message = f"{str(e)}\n{traceback.format_exc()}"
+            Gimp.message(message)
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(message))
 
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
 
 
     def initialize(self, procedure, run_mode, image, drawables, config, run_data):
+        try:
+            initialize.prepare_paint_from_template(image)
+        except Exception as e:
+            message = f"{str(e)}\n{traceback.format_exc()}"
+            Gimp.message(message)
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(message))
 
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
 
