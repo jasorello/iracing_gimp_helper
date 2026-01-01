@@ -58,6 +58,7 @@ class IracingHelper (Gimp.PlugIn):
         except Exception as e:
             message = f"{str(e)}\n{traceback.format_exc()}"
             Gimp.message(message)
+            image.undo_thaw()  # To put us in a more usable state
             return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(message))
 
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
