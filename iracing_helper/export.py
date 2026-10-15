@@ -200,10 +200,12 @@ def regenerate_channels(image: Gimp.Image, lm: util.LayerManager):
         blue_layers.append(L_BLUE_SPEC_PATTERN)
     remask_layers_from_channel(image, lm, blue_layers, C_BLUE)
 
+    Gimp.message('we gonna make it?')
     remask_layers_from_channel(image, lm, [L_DECAL_SPEC], C_DECAL_ALPHA)
-    if lm.layer(C_CARBON_LEFT, required=False):
+    if lm.layer(L_CF_LEFT_MASK, required=False):
+        Gimp.message('Made it here')
         remask_layers_from_channel(image, lm, [L_CF_LEFT_MASK, L_CF_LEFT_SPEC], C_CARBON_LEFT)
-    if lm.layer(C_CARBON_RIGHT, required=False):
+    if lm.layer(L_CF_RIGHT_MASK, required=False):
         remask_layers_from_channel(image, lm, [L_CF_RIGHT_MASK, L_CF_RIGHT_SPEC], C_CARBON_RIGHT)
 
 
